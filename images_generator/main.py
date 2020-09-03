@@ -6,8 +6,8 @@ from oval import Oval
 from wigner_caustic import WignerCaustic
 
 
-def plot_curve(curve, curve_type, spikes_num, img_num, img_size = 64):
-    root = "./../../images/v02/"
+def plot_curve(root, curve, curve_type, spikes_num, img_num, img_size = 64):
+    # root = "./../../images/v12/"
 
     if curve_type == "oval":
         my_dpi = 120
@@ -29,47 +29,80 @@ def plot_curve(curve, curve_type, spikes_num, img_num, img_size = 64):
 
 
 if __name__ == "__main__":
+    root = "./../../images/v12/"
+
     for spikes_num in range(3, 8, 2):
         # bias = 300 * spikes_num
         oval_idx = 0
-        images_per_class_num = 20
+        images_per_class_num = 5
+        for x in range(5, 50, 20):
+            # oval_idx = 0
+            # images_per_class_num = 5
 
-        for i in range(images_per_class_num):
-            sin_params = []
-            cos_params = []
+            for i in range(images_per_class_num):
+                random.seed(random.randint(0, 100))
 
-            for j in range(spikes_num + 2):
-                if j % 2:
-                    rand_sin_param = random.uniform(10, 40)
-                    rand_cos_param = random.uniform(10, 40)
-                else:
-                    rand_sin_param = random.uniform(-3, 3)
-                    rand_cos_param = random.uniform(-3, 3)
-                    
-                sin_params.append(rand_sin_param)
-                cos_params.append(rand_cos_param)
+                sin_params = []
+                cos_params = []
 
-            sin_params[spikes_num - 1] = random.uniform(40, 60)
-            cos_params[spikes_num - 1] = random.uniform(40, 60)
+                for j in range(spikes_num + 2):
+                    if j % 2:
+                        rand_sin_param = random.uniform(-x, x) #random.uniform(-40, 40)
+                        rand_cos_param = random.uniform(-x, x) #random.uniform(-40, 40)
+                    else:
+                        rand_sin_param = random.uniform(-5, 5)
+                        rand_cos_param = random.uniform(-5, 5)
+                        
+                    sin_params.append(rand_sin_param)
+                    cos_params.append(rand_cos_param)
 
-            limit = 0
+                sin_params[spikes_num - 1] = random.uniform(15, 20) #random.uniform(40, 60)
+                cos_params[spikes_num - 1] = random.uniform(15, 20) #random.uniform(40, 60)
 
-            for idx in range(len(sin_params)):
-                limit += ((idx + 1) ** 2 - 1) * (sin_params[idx] + cos_params[idx])
-            
-            bias = limit + 100
-            print(f"### bias: {bias} ### limit: {limit} ###")
+                # limit = 0
 
-            oval_idx += 1
+                # for idx in range(len(sin_params)):
+                #     limit += ((idx + 1) ** 2 - 1) * (sin_params[idx] + cos_params[idx])
+                
+                # bias = limit + 100
+                # print(f"### bias: {bias} ### limit: {limit} ###")
 
-            print(f"### Num of spikes {spikes_num} ### Oval no {oval_idx} ### sin_params {sin_params} ### cos_params {cos_params} ###")
+                ### v11
+                oval_idx += 1
 
-            oval = Oval(bias, sin_params, cos_params)
-            oval_parameterization = oval.parameterization()
-            wc = WignerCaustic(oval)
-            wc_parameterization = wc.wigner_caustic()
+                oval = Oval(sin_params, cos_params)
+                oval_parameterization = oval.parameterization()
+                wc = WignerCaustic(oval)
+                wc_parameterization = wc.wigner_caustic()
 
-            plot_curve(oval_parameterization, "oval", spikes_num, oval_idx)
-            plot_curve(oval_parameterization, "oval", spikes_num, oval_idx, img_size = 128)
-            plot_curve(wc_parameterization, "wc", spikes_num, oval_idx)
+                log_text = f"### Num of spikes {spikes_num} ### Oval no {oval_idx} ###\n### sin_params {sin_params} ###\n### cos_params {cos_params} ###\n### bias {oval.bias} ###\n"
+                print(log_text)
+
+                plot_curve(root, oval_parameterization, "oval", spikes_num, oval_idx)
+                plot_curve(root, oval_parameterization, "oval", spikes_num, oval_idx, img_size = 128)
+                plot_curve(root, wc_parameterization, "wc", spikes_num, oval_idx)
+
+                log_file_path = f"{root}log_file.txt"
+                with open(log_file_path, "a+") as log_file:
+                    log_file.write(f"{log_text}\n")
+                
+                ### v12
+                # for param_idx in range(spikes_num, spikes_num + 3):
+                #     oval_idx += 1
+
+                #     oval = Oval(sin_params[0:param_idx], cos_params[0:param_idx])
+                #     oval_parameterization = oval.parameterization()
+                #     wc = WignerCaustic(oval)
+                #     wc_parameterization = wc.wigner_caustic()
+
+                #     log_text = f"### Num of spikes {spikes_num} ### Oval no {oval_idx} ###\n### sin_params {sin_params[0:param_idx]} ###\n### cos_params {cos_params[0:param_idx]} ###\n### bias {oval.bias} ###\n"
+                #     print(log_text)
+
+                #     plot_curve(root, oval_parameterization, "oval", spikes_num, oval_idx)
+                #     plot_curve(root, oval_parameterization, "oval", spikes_num, oval_idx, img_size = 128)
+                #     plot_curve(root, wc_parameterization, "wc", spikes_num, oval_idx)
+
+                #     log_file_path = f"{root}log_file.txt"
+                #     with open(log_file_path, "a+") as log_file:
+                #         log_file.write(f"{log_text}\n")
     

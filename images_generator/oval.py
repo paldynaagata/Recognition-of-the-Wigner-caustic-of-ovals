@@ -5,11 +5,21 @@ from scipy import misc
 
 
 class Oval:
-    def __init__(self, bias, sin_params, cos_params, t = np.linspace(0, 2 * math.pi, 1024)):
+    def __init__(self, sin_params, cos_params, t = np.linspace(0, 2 * math.pi, 1024)):
         self.t = t
-        self.bias = bias
+        self.bias = 0
         self.sin_params = sin_params
         self.cos_params = cos_params
+        self.bias = self._calculate_bias()
+
+
+    def _condition_function(self):
+        return self._support_function(self.t) + misc.derivative(self._support_function, self.t, dx = 1e-6, n = 2)
+    
+
+    def _calculate_bias(self):
+        max_val = np.max(self._condition_function())
+        return np.ceil(max_val) + 100 / max_val #np.ceil(max_val)
     
 
     def _generate_fourier_series(self, t):
