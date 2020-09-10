@@ -19,7 +19,7 @@ class Oval:
 
     def _calculate_bias(self):
         max_val = np.max(self._condition_function())
-        return np.ceil(max_val) + 100 / max_val
+        return 1.15 * max_val
     
 
     def _generate_fourier_series(self, t):
