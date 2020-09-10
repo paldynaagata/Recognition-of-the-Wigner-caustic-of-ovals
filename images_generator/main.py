@@ -7,8 +7,6 @@ from wigner_caustic import WignerCaustic
 
 
 def plot_curve(root, curve, curve_type, spikes_num, img_num, img_size = 64):
-    # root = "./../../images/v12/"
-
     if curve_type == "oval":
         my_dpi = 120
         plt.figure(figsize = (img_size / my_dpi, img_size / my_dpi), dpi = my_dpi)
@@ -29,16 +27,12 @@ def plot_curve(root, curve, curve_type, spikes_num, img_num, img_size = 64):
 
 
 if __name__ == "__main__":
-    root = "./../../images/v12/"
+    root = "./../../images/v10/"
 
     for spikes_num in range(3, 8, 2):
-        # bias = 300 * spikes_num
         oval_idx = 0
         images_per_class_num = 5
         for x in range(5, 50, 20):
-            # oval_idx = 0
-            # images_per_class_num = 5
-
             for i in range(images_per_class_num):
                 random.seed(random.randint(0, 100))
 
@@ -58,14 +52,6 @@ if __name__ == "__main__":
 
                 sin_params[spikes_num - 1] = random.uniform(15, 20) #random.uniform(40, 60)
                 cos_params[spikes_num - 1] = random.uniform(15, 20) #random.uniform(40, 60)
-
-                # limit = 0
-
-                # for idx in range(len(sin_params)):
-                #     limit += ((idx + 1) ** 2 - 1) * (sin_params[idx] + cos_params[idx])
-                
-                # bias = limit + 100
-                # print(f"### bias: {bias} ### limit: {limit} ###")
 
                 ### v11
                 oval_idx += 1
