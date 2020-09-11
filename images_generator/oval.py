@@ -13,12 +13,13 @@ class Oval:
         self.bias = self._calculate_bias()
 
 
-    def _condition_function(self):
-        return self._support_function(self.t) + misc.derivative(self._support_function, self.t, dx = 1e-6, n = 2)
+    def _condition_function(self, t, shift = 0):
+        t += shift
+        return self._support_function(t) + misc.derivative(self._support_function, t, dx = 1e-6, n = 2)
     
 
     def _calculate_bias(self):
-        max_val = np.max(self._condition_function())
+        max_val = np.max(self._condition_function(self.t))
         return 1.15 * max_val
     
 
