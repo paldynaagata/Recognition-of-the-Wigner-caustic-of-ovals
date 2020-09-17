@@ -28,13 +28,11 @@ class Oval:
         sin_params_len = len(self.sin_params)
         cos_params_len = len(self.cos_params)
 
-        if sin_params_len > 0:
-            for i in range(sin_params_len):
-                equation = equation + self.sin_params[i] * np.sin((i+1) * t)
-
-        if cos_params_len > 0:
-            for i in range(cos_params_len):
-                equation = equation + self.cos_params[i] * np.cos((i+1) * t)
+        for i in range(sin_params_len):
+            equation = equation + self.sin_params[i] * np.sin((i+1) * t)
+        
+        for i in range(cos_params_len):
+            equation = equation + self.cos_params[i] * np.cos((i+1) * t)
         
         return equation
 
