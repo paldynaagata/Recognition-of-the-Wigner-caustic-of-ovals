@@ -21,13 +21,13 @@ class WignerCaustic:
     
 
     def _spikes_condition_function(self, t):
-        # return self.oval._condition_function(t) - self.oval._condition_function(t, math.pi)
-        sin_params_len = len(self.oval.sin_params)
+        params_len = len(self.oval.sin_params)
         equation = 0
 
-        if sin_params_len > 0:
-            for i in range(sin_params_len):
-                equation = equation + (1 - (i + 1) ** 2) * (self.oval.sin_params[i] * np.sin((i+1) * t) + self.oval.cos_params[i] * np.cos((i+1) * t))
+        if params_len > 0:
+            for i in range(params_len):
+                if i % 2 == 0:
+                    equation = equation + (1 - (i + 1) ** 2) * (self.oval.sin_params[i] * np.sin((i+1) * t) + self.oval.cos_params[i] * np.cos((i+1) * t))
         
         return 2 * equation
 
