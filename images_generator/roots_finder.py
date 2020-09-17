@@ -25,12 +25,12 @@ class RootsFinder:
         return self._newton_method(x_0)
 
 
-    def naive_global_newton(self, a, b, n):
+    def naive_global_newton(self, start, end, steps_num):
         roots = []
-        step = (b - a) / n
-        x_0 = a
+        step = (end - start) / steps_num
+        x_0 = start
 
-        while x_0 < b:
+        while x_0 < end:
             new_root = self.newton_method(x_0)
 
             if new_root is not None:
@@ -41,7 +41,7 @@ class RootsFinder:
                         new_root_is_new = False
                         break
 
-                if a <= new_root < b and new_root_is_new:
+                if start <= new_root < end and new_root_is_new:
                     roots.append(new_root)
 
             x_0 += step
