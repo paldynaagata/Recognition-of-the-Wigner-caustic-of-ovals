@@ -34,5 +34,5 @@ class WignerCaustic:
 
     def get_number_of_cusps(self):
         roots_finder = RootsFinder(self._cusps_condition_function)
-        cusps = roots_finder.naive_global_newton(0, math.pi, 10)
+        cusps = roots_finder.naive_global_newton(0, math.pi, 100)
         return len(cusps)
