@@ -24,10 +24,9 @@ class WignerCaustic:
         params_len = len(self.oval.sin_params)
         equation = 0
 
-        if params_len > 0:
-            for i in range(params_len):
-                if i % 2 == 0:
-                    equation = equation + (1 - (i + 1) ** 2) * (self.oval.sin_params[i] * np.sin((i+1) * t) + self.oval.cos_params[i] * np.cos((i+1) * t))
+        for i in range(params_len):
+            if i % 2 == 0:
+                equation += (1 - (i + 1) ** 2) * (self.oval.sin_params[i] * np.sin((i+1) * t) + self.oval.cos_params[i] * np.cos((i+1) * t))
         
         return 2 * equation
 
