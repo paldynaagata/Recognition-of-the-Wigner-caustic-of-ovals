@@ -20,7 +20,7 @@ class WignerCaustic:
         return (self._wigner_caustic_i(parameterization_t, parameterization_t_pi, 0), self._wigner_caustic_i(parameterization_t, parameterization_t_pi, 1))
     
 
-    def _spikes_condition_function(self, t):
+    def _cusps_condition_function(self, t):
         params_len = len(self.oval.sin_params)
         equation = 0
 
@@ -32,7 +32,7 @@ class WignerCaustic:
         return 2 * equation
 
 
-    def get_number_of_spikes(self):
-        roots_finder = RootsFinder(self._spikes_condition_function)
-        spikes = roots_finder.naive_global_newton(0, math.pi, 10)
-        return len(spikes)
+    def get_number_of_cusps(self):
+        roots_finder = RootsFinder(self._cusps_condition_function)
+        cusps = roots_finder.naive_global_newton(0, math.pi, 10)
+        return len(cusps)
