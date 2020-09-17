@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import random
 import os
+import uuid
 
 from oval import Oval
 from wigner_caustic import WignerCaustic
@@ -29,16 +30,24 @@ def plot_curve(root, curve, curve_type, cusps_num, img_num, img_size = 64):
 if __name__ == "__main__":
     root = "./../../images/v10/"
 
+    if not os.path.exists(root):
+        os.makedirs(root)
+
     result = 0
     counter = 0
+
+    seed = hash(uuid.uuid4())
+    random.seed(seed)
+
+    log_file_path = f"{root}log_file.txt"
+    with open(log_file_path, "a+") as log_file:
+        log_file.write(f"### Seed {seed} ###\n\n")
 
     for cusps_num in range(3, 8, 2):
         oval_idx = 0
         images_per_class_num = 5
         for x in range(5, 50, 20):
             for i in range(images_per_class_num):
-                random.seed(random.randint(0, 100))
-
                 sin_params = []
                 cos_params = []
 
@@ -74,8 +83,7 @@ if __name__ == "__main__":
                 plot_curve(root, oval_parameterization, "oval", cusps_num, oval_idx)
                 plot_curve(root, oval_parameterization, "oval", cusps_num, oval_idx, img_size = 128)
                 plot_curve(root, wc_parameterization, "wc", cusps_num, oval_idx)
-
-                log_file_path = f"{root}log_file.txt"
+                
                 with open(log_file_path, "a+") as log_file:
                     log_file.write(f"{log_text}\n")
                 
