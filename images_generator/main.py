@@ -33,28 +33,28 @@ if __name__ == "__main__":
     if not os.path.exists(root):
         os.makedirs(root)
 
-    result = 0
-    counter = 0
-
     seed = hash(uuid.uuid4())
     random.seed(seed)
 
     log_file_path = f"{root}log_file.txt"
     with open(log_file_path, "a+") as log_file:
         log_file.write(f"### Seed {seed} ###\n\n")
+    
+    images_per_type_num = 5
+    oval_idx = 0
+    ovals_num = 0
+    consistent_cusps_num_counter = 0
 
     for cusps_num in range(3, 8, 2):
-        oval_idx = 0
-        images_per_class_num = 5
         for x in range(5, 50, 20):
-            for i in range(images_per_class_num):
+            for i in range(images_per_type_num):
                 sin_params = []
                 cos_params = []
 
                 for j in range(cusps_num + 2):
                     if j % 2:
-                        rand_sin_param = random.uniform(-x, x) #random.uniform(-40, 40)
-                        rand_cos_param = random.uniform(-x, x) #random.uniform(-40, 40)
+                        rand_sin_param = random.uniform(-x, x)
+                        rand_cos_param = random.uniform(-x, x)
                     else:
                         rand_sin_param = random.uniform(-5, 5)
                         rand_cos_param = random.uniform(-5, 5)
@@ -62,8 +62,8 @@ if __name__ == "__main__":
                     sin_params.append(rand_sin_param)
                     cos_params.append(rand_cos_param)
 
-                sin_params[cusps_num - 1] = random.uniform(15, 20) #random.uniform(40, 60)
-                cos_params[cusps_num - 1] = random.uniform(15, 20) #random.uniform(40, 60)
+                sin_params[cusps_num - 1] = random.uniform(15, 20)
+                cos_params[cusps_num - 1] = random.uniform(15, 20)
 
                 ### v11
                 oval_idx += 1
@@ -72,17 +72,17 @@ if __name__ == "__main__":
                 oval_parameterization = oval.parameterization()
                 wc = WignerCaustic(oval)
                 wc_parameterization = wc.wigner_caustic()
-                num_of_cusps = wc.get_number_of_cusps()
+                real_cusps_num = wc.get_number_of_cusps()
 
-                result += 1 if num_of_cusps == cusps_num else 0
-                counter += 1
+                consistent_cusps_num_counter += 1 if real_cusps_num == cusps_num else 0
+                ovals_num += 1
 
-                log_text = f"### Num of cusps {cusps_num} ### Oval no {oval_idx} ###\n### sin_params {sin_params} ###\n### cos_params {cos_params} ###\n### bias {oval.bias} ###\n### num_of_cusps {num_of_cusps} ###\n"
+                log_text = f"### Oval no {oval_idx} ### Cusps num {cusps_num} ### Real cusps num {real_cusps_num} ###\n### sin_params {sin_params} ###\n### cos_params {cos_params} ###\n### bias {oval.bias} ###\n"
                 print(log_text)
 
-                plot_curve(root, oval_parameterization, "oval", cusps_num, oval_idx)
-                plot_curve(root, oval_parameterization, "oval", cusps_num, oval_idx, img_size = 128)
-                plot_curve(root, wc_parameterization, "wc", cusps_num, oval_idx)
+                plot_curve(root, oval_parameterization, "oval", real_cusps_num, oval_idx)
+                plot_curve(root, oval_parameterization, "oval", real_cusps_num, oval_idx, img_size = 128)
+                plot_curve(root, wc_parameterization, "wc", real_cusps_num, oval_idx)
                 
                 with open(log_file_path, "a+") as log_file:
                     log_file.write(f"{log_text}\n")
@@ -107,5 +107,5 @@ if __name__ == "__main__":
                 #     with open(log_file_path, "a+") as log_file:
                 #         log_file.write(f"{log_text}\n")
 
-    print(result/counter)
+    print(f"Percentage of consistent cusps num: {consistent_cusps_num_counter/ovals_num:.2%}")
     
