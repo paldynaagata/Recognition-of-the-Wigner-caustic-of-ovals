@@ -44,7 +44,7 @@ class ImagesGenerator:
 
         seed = hash(uuid.uuid4())
         random.seed(seed)
-        self._write_log(f"### Seed {seed} ###\n\n")
+        self._write_log(f"### Seed {seed} ###\n")
         
         oval_idx = 0
         consistent_cusps_num_counter = 0
@@ -60,7 +60,10 @@ class ImagesGenerator:
                     for param_idx in range(start, end):
                         oval_idx += 1
 
-                        oval = Oval(sin_params[0:param_idx], cos_params[0:param_idx])
+                        sin_params_subset = sin_params[0:param_idx]
+                        cos_params_subset = cos_params[0:param_idx]
+
+                        oval = Oval(sin_params_subset, cos_params_subset)
                         oval_parameterization = oval.parameterization()
                         wc = WignerCaustic(oval)
                         wc_parameterization = wc.wigner_caustic()
@@ -68,7 +71,7 @@ class ImagesGenerator:
 
                         consistent_cusps_num_counter += 1 if real_cusps_num == cusps_num else 0
 
-                        log_text = f"### Oval no {oval_idx} ### Cusps num {cusps_num} ### Real cusps num {real_cusps_num} ###\n### sin_params {sin_params[0:param_idx]} ###\n### cos_params {cos_params[0:param_idx]} ###\n### bias {oval.bias} ###\n"
+                        log_text = f"### Oval no {oval_idx} ### Cusps num {cusps_num} ### Real cusps num {real_cusps_num} ###\n### sin_params {sin_params_subset} ###\n### cos_params {cos_params_subset} ###\n### bias {oval.bias} ###\n"
                         print(log_text)
                         self._write_log(log_text)
 
