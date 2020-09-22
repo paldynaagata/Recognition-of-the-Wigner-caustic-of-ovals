@@ -2,6 +2,10 @@ from scipy import misc
 
 
 class RootsFinder:
+    """
+    Class for finding roots of the given function
+    """
+
     def __init__(self, f):
         self.f = f
         self.recursions_counter = 0
@@ -11,7 +15,7 @@ class RootsFinder:
         self.recursions_counter = 0
         return self._newton_method(x_0)
 
-        
+
     def naive_global_newton(self, start, end, steps_num):
         roots = []
         step = (end - start) / steps_num

@@ -5,6 +5,10 @@ from scipy import misc
 
 
 class Oval:
+    """
+    Class representing oval for given sin and cos parameters
+    """
+
     def __init__(self, sin_params, cos_params, t = np.linspace(0, 2 * math.pi, 1024)):
         self.t = t
         self.bias = 0
@@ -12,7 +16,7 @@ class Oval:
         self.cos_params = cos_params
         self.bias = self._calculate_bias()
 
-        
+
     def parameterization(self, shift = 0):
         t = self.t + shift
         curve_t = self._support_function(t)

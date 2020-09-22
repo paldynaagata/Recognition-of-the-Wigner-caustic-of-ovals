@@ -6,6 +6,10 @@ from roots_finder import RootsFinder
 
 
 class WignerCaustic:
+    """
+    Class representing wigner caustic for the given oval
+    """
+
     def __init__(self, oval: Oval):
         self.oval = oval
 
@@ -25,7 +29,7 @@ class WignerCaustic:
     def _wigner_caustic_i(self, parameterization_t, parameterization_t_pi, idx):
         return (parameterization_t[idx] + parameterization_t_pi[idx]) / 2
 
-        
+
     def _cusps_condition_function(self, t):
         params_len = len(self.oval.sin_params)
         equation = 0

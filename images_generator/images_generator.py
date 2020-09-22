@@ -8,6 +8,10 @@ from wigner_caustic import WignerCaustic
 
 
 class ImagesGenerator:
+    """
+    Class for generating images of ovals and wigner caustics
+    """
+
     def __init__(self, generator_type, root_directory, images_per_type_num):
         self.generator_type = generator_type
         self.root_directory = root_directory
