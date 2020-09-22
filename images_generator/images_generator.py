@@ -5,6 +5,7 @@ import uuid
 
 from oval import Oval
 from wigner_caustic import WignerCaustic
+from curve_type import CurveType
 
 
 class ImagesGenerator:
@@ -18,14 +19,16 @@ class ImagesGenerator:
         self.images_per_type_num = images_per_type_num
 
 
-    def plot_curve(self, curve, curve_type, cusps_num, img_num, img_size = 64):
-        if curve_type == "oval":
+    def plot_curve(self, curve, curve_type: CurveType, cusps_num, img_num, img_size = 64):
+        if curve_type == CurveType.oval:
             my_dpi = 120
             plt.figure(figsize = (img_size / my_dpi, img_size / my_dpi), dpi = my_dpi)
             img_path = f"ovals/{img_size:d}x{img_size:d}/class_{cusps_num:d}/"
-        elif curve_type == "wc":
+        elif curve_type == CurveType.wigner_caustic:
             plt.figure(figsize = (8, 8))
             img_path = "wigner_caustics/"
+        else:
+            raise ValueError("Unexpected curve_type")
         
         directory = f"{self.root_directory}{img_path}"
 
@@ -34,7 +37,7 @@ class ImagesGenerator:
         
         plt.plot(curve[0], curve[1], c = "black")
         plt.axis("off")
-        plt.savefig(f"{directory}{cusps_num:d}_{curve_type}{img_num:04d}.png")
+        plt.savefig(f"{directory}{cusps_num:d}_{curve_type.name}_{img_num:04d}.png")
         plt.close()
 
 
@@ -75,9 +78,9 @@ class ImagesGenerator:
                         print(log_text)
                         self._write_log(log_text)
 
-                        self.plot_curve(oval_parameterization, "oval", cusps_num, oval_idx)
-                        self.plot_curve(oval_parameterization, "oval", cusps_num, oval_idx, img_size = 128)
-                        self.plot_curve(wc_parameterization, "wc", cusps_num, oval_idx)
+                        self.plot_curve(oval_parameterization, CurveType.oval, cusps_num, oval_idx)
+                        self.plot_curve(oval_parameterization, CurveType.oval, cusps_num, oval_idx, img_size = 128)
+                        self.plot_curve(wc_parameterization, CurveType.wigner_caustic, cusps_num, oval_idx)
 
         print(f"Percentage of consistent cusps num: {consistent_cusps_num_counter/oval_idx:.2%}")
 

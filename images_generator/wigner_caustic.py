@@ -7,7 +7,7 @@ from roots_finder import RootsFinder
 
 class WignerCaustic:
     """
-    Class representing wigner caustic for the given oval
+    Class generating wigner caustic for the given oval
     """
 
     def __init__(self, oval: Oval):
@@ -17,7 +17,9 @@ class WignerCaustic:
     def wigner_caustic(self):
         parameterization_t = self.oval.parameterization()
         parameterization_t_pi = self.oval.parameterization(math.pi)
-        return (self._wigner_caustic_i(parameterization_t, parameterization_t_pi, 0), self._wigner_caustic_i(parameterization_t, parameterization_t_pi, 1))
+        wigner_caustic_0 = self._wigner_caustic_i(parameterization_t, parameterization_t_pi, 0)
+        wigner_caustic_1 = self._wigner_caustic_i(parameterization_t, parameterization_t_pi, 1)
+        return (wigner_caustic_0, wigner_caustic_1)
 
 
     def get_number_of_cusps(self):
@@ -36,6 +38,9 @@ class WignerCaustic:
 
         for i in range(params_len):
             if i % 2 == 0:
-                equation += (1 - (i + 1) ** 2) * (self.oval.sin_params[i] * np.sin((i+1) * t) + self.oval.cos_params[i] * np.cos((i+1) * t))
+                arg = (i + 1) * t
+                sin_with_param = self.oval.sin_params[i] * np.sin(arg)
+                cos_with_param = self.oval.cos_params[i] * np.cos(arg)
+                equation += (1 - (i + 1) ** 2) * (sin_with_param + cos_with_param)
         
         return 2 * equation
