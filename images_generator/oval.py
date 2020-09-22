@@ -12,15 +12,24 @@ class Oval:
         self.cos_params = cos_params
         self.bias = self._calculate_bias()
 
+        
+    def parameterization(self, shift = 0):
+        t = self.t + shift
+        curve_t = self._support_function(t)
+        cos_t = np.cos(t)
+        sin_t = np.sin(t)
+        curve_dx = misc.derivative(self._support_function, t, dx = 1e-6, n = 1)
+        return (curve_t * cos_t - curve_dx * sin_t, curve_t * sin_t + curve_dx * cos_t)
+
 
     def _condition_function(self):
         return self._support_function(self.t) + misc.derivative(self._support_function, self.t, dx = 1e-6, n = 2)
-    
+
 
     def _calculate_bias(self):
         max_val = np.max(self._condition_function())
         return 1.15 * max_val
-    
+
 
     def _generate_fourier_series(self, t):
         equation = self.bias
@@ -38,12 +47,3 @@ class Oval:
 
     def _support_function(self, t):
         return self._generate_fourier_series(t)
-
-
-    def parameterization(self, shift = 0):
-        t = self.t + shift
-        curve_t = self._support_function(t)
-        cos_t = np.cos(t)
-        sin_t = np.sin(t)
-        curve_dx = misc.derivative(self._support_function, t, dx = 1e-6, n = 1)
-        return (curve_t * cos_t - curve_dx * sin_t, curve_t * sin_t + curve_dx * cos_t)
