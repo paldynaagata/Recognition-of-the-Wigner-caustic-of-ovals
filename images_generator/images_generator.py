@@ -13,10 +13,11 @@ class ImagesGenerator:
     Class for generating images of ovals and wigner caustics
     """
 
-    def __init__(self, generator_type, root_directory, images_per_type_num):
+    def __init__(self, generator_type, root_directory, images_per_type_num, images_sizes_list):
         self.generator_type = generator_type
         self.root_directory = root_directory
         self.images_per_type_num = images_per_type_num
+        self.images_sizes_list = images_sizes_list
 
 
     def plot_curve(self, curve, curve_type: CurveType, cusps_num, img_num, img_size = 64):
@@ -78,8 +79,9 @@ class ImagesGenerator:
                         print(log_text)
                         self._write_log(log_text)
 
-                        self.plot_curve(oval_parameterization, CurveType.oval, cusps_num, oval_idx)
-                        self.plot_curve(oval_parameterization, CurveType.oval, cusps_num, oval_idx, img_size = 128)
+                        for img_size in self.images_sizes_list:
+                            self.plot_curve(oval_parameterization, CurveType.oval, cusps_num, oval_idx, img_size = img_size)
+                        
                         self.plot_curve(wc_parameterization, CurveType.wigner_caustic, cusps_num, oval_idx)
 
         print(f"Percentage of consistent cusps num: {consistent_cusps_num_counter/oval_idx:.2%}")
