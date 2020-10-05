@@ -84,7 +84,7 @@ class ImagesGenerator:
                         
                         self.plot_curve(wc_parameterization, CurveType.wigner_caustic, cusps_num, oval_idx)
 
-        print(f"Percentage of consistent cusps num: {consistent_cusps_num_counter/oval_idx:.2%}")
+        print(f"Percentage of consistent cusps num: {consistent_cusps_num_counter/oval_idx:.2%}\n")
 
 
     def _generate_parameters(self, cusps_num, random_range):
