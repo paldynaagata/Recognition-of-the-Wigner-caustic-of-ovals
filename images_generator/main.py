@@ -18,11 +18,11 @@ if __name__ == "__main__":
     }
 
     images_per_class_num_dict = {
-        "train": [9, 27, 90], #[90, 270, 900],
-        "test": [9] #[90]
+        "train": [90, 270, 900],
+        "test": [90]
     }
 
-    images_sizes_list = [64] #[64 * 2 ** i for i in range(3)]
+    images_sizes_list = [64 * 2 ** i for i in range(3)]
 
     for key, value in generators_dict.items():
         generator_type = value["type"]
