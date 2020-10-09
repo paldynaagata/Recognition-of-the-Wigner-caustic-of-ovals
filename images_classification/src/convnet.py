@@ -46,7 +46,6 @@ class ConvNet:
         plt.legend(["train", "validation"])
         # TO DO: improve path for savefig
         plt.savefig(f"./results/plots/{metric}.png")
-        plt.show()
         plt.close()
 
 
