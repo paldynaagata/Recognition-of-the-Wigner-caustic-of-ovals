@@ -3,7 +3,7 @@ import time
 
 
 class ConvNet:
-    def __init___(self, input_shape, num_classes = 3):
+    def __init__(self, input_shape, num_classes = 3):
         self.input_shape = input_shape
         self.num_classes = num_classes
     
@@ -34,7 +34,7 @@ class ConvNet:
 
         print(f"Model took {end - start:0.2f} seconds to train")
 
-        return model_info
+        return model, model_info
     
 
     def _plot_results(self, model_info, metric):
