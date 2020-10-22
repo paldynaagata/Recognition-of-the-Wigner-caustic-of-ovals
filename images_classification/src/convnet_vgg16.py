@@ -4,8 +4,8 @@ from tensorflow.keras import layers
 
 
 class ConvNetVGG16(ConvNet):
-    def prepare_convnet_vgg16(self, fc1 = 4096, fc2 = 4096, activation = "softmax", freeze = 0):
-        convnet_vgg16 = keras.applications.VGG16(weights = "imagenet", include_top = False)
+    def prepare_convnet_vgg16(self, fc1 = 4096, fc2 = 4096, activation = "softmax", freeze = 1):
+        convnet_vgg16 = keras.applications.VGG16(include_top = False, weights = "imagenet", input_shape = self.input_shape)
         
         if freeze:
             for layer in convnet_vgg16.layers:
