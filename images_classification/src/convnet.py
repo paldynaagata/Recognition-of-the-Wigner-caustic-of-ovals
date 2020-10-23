@@ -16,7 +16,7 @@ class ConvNet:
                                 epochs,
                                 optimizer = "adam", 
                                 loss = "sparse_categorical_crossentropy", 
-                                metrics = ["accuracy"]):
+                                metrics = ["sparse_categorical_accuracy"]):
         model.compile(
             optimizer = optimizer,
             loss = loss,
