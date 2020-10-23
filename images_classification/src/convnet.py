@@ -38,11 +38,12 @@ class ConvNet:
     
 
     def _plot_results(self, model_info, metric):
+        metric_name = metric.replace("_", " ")
         plt.plot(model_info.history[metric])
         plt.plot(model_info.history[f"val_{metric}"])
-        plt.title(f"Model {metric}")
-        plt.ylabel(metric)
+        plt.title(f"Model {metric_name}")
         plt.xlabel("epoch")
+        plt.ylabel(metric_name)
         plt.legend(["train", "validation"])
         # TO DO: improve path for savefig
         plt.savefig(f"./results/plots/{metric}.png")
