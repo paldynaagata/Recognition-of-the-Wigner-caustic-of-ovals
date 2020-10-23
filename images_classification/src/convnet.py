@@ -1,3 +1,4 @@
+import numpy as np
 import matplotlib.pyplot as plt
 import time
 
@@ -37,10 +38,11 @@ class ConvNet:
         return model, model_info
     
 
-    def _plot_results(self, model_info, metric):
+    def _plot_results(self, model_info, metric, n_epochs, xticks_step):
         metric_name = metric.replace("_", " ")
         plt.plot(model_info.history[metric])
         plt.plot(model_info.history[f"val_{metric}"])
+        plt.xticks(np.arange(0, n_epochs + xticks_step, step = xticks_step))
         plt.title(f"Model {metric_name}")
         plt.xlabel("epoch")
         plt.ylabel(metric_name)
@@ -52,5 +54,7 @@ class ConvNet:
 
     def plot_results(self, model_info, metrics):
         metrics = ["loss"] + metrics
+        n_epochs = len(model_info.history["loss"])
+        xticks_step = 1 if n_epochs < 10 else n_epochs / 10
         for metric in metrics:
-            self._plot_results(model_info, metric)
+            self._plot_results(model_info, metric, n_epochs, xticks_step)
