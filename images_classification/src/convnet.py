@@ -34,9 +34,11 @@ class ConvNet:
         )
         end = time.time()
 
-        print(f"Model took {end - start:0.2f} seconds to train")
+        training_time = end - start
 
-        return model, model_info
+        print(f"Model took {training_time:0.2f} seconds to train")
+
+        return model, model_info, training_time
     
 
     def _plot_results(self, model_info_history, metric, n_epochs, xticks_step, plots_path, plots_name_suffix, extensions):
@@ -63,9 +65,10 @@ class ConvNet:
 
     def save_training_results_csv(self, model_info_history, training_results_path):
         training_results_path = f"{training_results_path}.csv"
-        model_info_history["epoch"] = list(range(len(model_info_history["loss"])))
-        keys = sorted(model_info_history.keys())
+        model_info_history_copy = model_info_history.copy()
+        model_info_history_copy["epoch"] = list(range(len(model_info_history["loss"])))
+        keys = sorted(model_info_history_copy.keys())
         with open(training_results_path, "w", newline = "") as outfile:
             writer = csv.writer(outfile, delimiter = ";")
             writer.writerow(keys)
-            writer.writerows(zip(*[model_info_history[key] for key in keys]))
+            writer.writerows(zip(*[model_info_history_copy[key] for key in keys]))
