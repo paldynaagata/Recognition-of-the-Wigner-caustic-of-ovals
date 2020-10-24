@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import csv
 import time
 
 
@@ -38,10 +39,10 @@ class ConvNet:
         return model, model_info
     
 
-    def _plot_results(self, model_info, metric, n_epochs, xticks_step, plots_path, plots_name_suffix, extensions):
+    def _plot_results(self, model_info_history, metric, n_epochs, xticks_step, plots_path, plots_name_suffix, extensions):
         metric_name = metric.replace("_", " ")
-        plt.plot(model_info.history[metric])
-        plt.plot(model_info.history[f"val_{metric}"])
+        plt.plot(model_info_history[metric])
+        plt.plot(model_info_history[f"val_{metric}"])
         plt.xticks(np.arange(0, n_epochs + xticks_step, step = xticks_step))
         plt.title(f"Model {metric_name}")
         plt.xlabel("epoch")
@@ -52,9 +53,19 @@ class ConvNet:
         plt.close()
 
 
-    def plot_results(self, model_info, metrics, plots_path, plots_name_suffix, extensions = ["png", "pdf"]):
+    def plot_results(self, model_info_history, metrics, plots_path, plots_name_suffix, extensions = ["png", "pdf"]):
         metrics = ["loss"] + metrics
-        n_epochs = len(model_info.history["loss"])
+        n_epochs = len(model_info_history["loss"])
         xticks_step = 1 if n_epochs < 10 else n_epochs / 10
         for metric in metrics:
-            self._plot_results(model_info, metric, n_epochs, xticks_step, plots_path, plots_name_suffix, extensions)
+            self._plot_results(model_info_history, metric, n_epochs, xticks_step, plots_path, plots_name_suffix, extensions)
+    
+
+    def save_training_results_csv(self, model_info_history, training_results_path):
+        training_results_path = f"{training_results_path}.csv"
+        model_info_history["epoch"] = list(range(len(model_info_history["loss"])))
+        keys = sorted(model_info_history.keys())
+        with open(training_results_path, "w", newline = "") as outfile:
+            writer = csv.writer(outfile, delimiter = ";")
+            writer.writerow(keys)
+            writer.writerows(zip(*[model_info_history[key] for key in keys]))

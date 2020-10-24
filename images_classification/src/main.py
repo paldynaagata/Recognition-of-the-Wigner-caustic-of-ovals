@@ -33,6 +33,10 @@ if __name__ == "__main__":
                 if not os.path.exists(plots_root_directory):
                     os.makedirs(plots_root_directory)
                 
+                training_results_root_directory = f"./results/vgg16/training_results/{generator_type}/{images_per_class_num}_per_class/{images_size}x{images_size}/"
+                if not os.path.exists(training_results_root_directory):
+                    os.makedirs(training_results_root_directory)
+                
                 models_root_directory = f"./models/vgg16/{generator_type}/{images_per_class_num}_per_class/{images_size}x{images_size}/"
                 if not os.path.exists(models_root_directory):
                     os.makedirs(models_root_directory)
@@ -61,10 +65,14 @@ if __name__ == "__main__":
                                                                                             validation_data,
                                                                                             batch_size,
                                                                                             epochs)
+                        vgg16_model_info_history = vgg16_model_info.history
                         
-                        # Plot and save results
-                        vgg16.plot_results(vgg16_model_info, metrics, plots_root_directory, results_name_suffix)
-                        # TO DO: save results from model_info
+                        # Plot training results
+                        vgg16.plot_results(vgg16_model_info_history, metrics, plots_root_directory, results_name_suffix)
+
+                        # Save training results
+                        training_results_path = f"{training_results_root_directory}training_results_{results_name_suffix}"
+                        vgg16.save_training_results_csv(vgg16_model_info_history, training_results_path)
 
                         # Test model on test data
                         test_prediction_results = vgg16_model_trained.evaluate(test_data)
