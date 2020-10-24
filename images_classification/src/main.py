@@ -1,9 +1,15 @@
+import pandas as pd
 import numpy as np
+import itertools
 import os
 
 from data_reader import DataReader
 from convnet_vgg16 import ConvNetVGG16
 from sklearn.metrics import confusion_matrix
+
+
+def prepare_labels(prefix):
+    return [f"{prefix}_{x}" for x in [3, 5, 7]]
 
 
 if __name__ == "__main__":
@@ -16,6 +22,12 @@ if __name__ == "__main__":
     batch_sizes_list = [32] #[32 * 2 ** i for i in range(3)]
     fully_connected_layers_sizes_list = [4096] #[16, 256, 4096]
     metrics = ["sparse_categorical_accuracy"]
+
+    # Prepare data frame for results
+    results_df = pd.DataFrame()
+
+    # Prepare test confusion matrix columns names
+    test_confusion_matrix_col_names = ["_".join(label) for label in itertools.product(prepare_labels("true"), prepare_labels("pred"))]
 
     for generator_type in generators_types_list:
         for images_per_class_num in images_per_class_num_list:
@@ -60,11 +72,11 @@ if __name__ == "__main__":
                         vgg16_model = vgg16.prepare_convnet_vgg16(fc1 = fc_size, fc2 = fc_size)
 
                         # Compile and fit model
-                        vgg16_model_trained, vgg16_model_info = vgg16.compile_and_fit_model(vgg16_model, 
-                                                                                            train_data,
-                                                                                            validation_data,
-                                                                                            batch_size,
-                                                                                            epochs)
+                        vgg16_model_trained, vgg16_model_info, training_time = vgg16.compile_and_fit_model(vgg16_model, 
+                                                                                                            train_data,
+                                                                                                            validation_data,
+                                                                                                            batch_size,
+                                                                                                            epochs)
                         vgg16_model_info_history = vgg16_model_info.history
                         
                         # Plot training results
@@ -84,4 +96,32 @@ if __name__ == "__main__":
                         model_path = f"{models_root_directory}vgg16_{results_name_suffix}.h5"
                         vgg16_model_trained.save(model_path)
 
-                        # TO DO: save results to csv
+                        # Add results do results data frame
+                        results_dict = {
+                            "generator_type": [generator_type],
+                            "images_per_class_num": [images_per_class_num],
+                            "images_size": [images_size],
+                            "batch_size": [batch_size],
+                            "fc1": [fc_size],
+                            "fc2": [fc_size],
+                            "training_time": [training_time]
+                        }
+
+                        for key, value in vgg16_model_info_history.items():
+                            prefix = "" if key.startswith("val") else "train_"
+                            results_dict[f"{prefix}{key}_last_epoch"] = value[-1]
+                            results_dict[f"{prefix}{key}_avg5"] = np.mean(value[-5:])
+                            results_dict[f"{prefix}{key}_avg10"] = np.mean(value[-10:])
+                        
+                        for idx, metric in enumerate(["loss"] + metrics):
+                            results_dict[f"test_{metric}"] = test_prediction_results[idx]
+                        
+                        for idx, col_name in enumerate(test_confusion_matrix_col_names):
+                            results_dict[col_name] = test_confusion_matrix[idx]
+
+                        results_df_new_row = pd.DataFrame(results_dict)
+                        results_df = results_df.append(results_df_new_row)
+
+    # Save results to csv
+    results_path = "./results/vgg16/results.csv"
+    results_df.to_csv(results_path, sep = ";", index = False)
