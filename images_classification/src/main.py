@@ -14,13 +14,13 @@ def prepare_labels(prefix):
 
 if __name__ == "__main__":
     # Set testing parameters
-    generators_types_list = ["v1"] #["v1", "v2"]
-    images_per_class_num_list = [90] #[90, 270, 900]
+    generators_types_list = ["v1", "v2"]
+    images_per_class_num_list = [90, 270, 900]
     test_images_num = 270
-    images_sizes_list = [64] #[64 * 2 ** i for i in range(3)]
-    epochs = 10 #50
+    images_sizes_list = [64 * 2 ** i for i in range(3)]
+    epochs = 50
     batch_sizes_list = [32] #[32 * 2 ** i for i in range(3)]
-    fully_connected_layers_sizes_list = [4096] #[16, 256, 4096]
+    fully_connected_layers_sizes_list = [16, 256, 4096]
     metrics = ["sparse_categorical_accuracy"]
 
     # Prepare data frame for results
