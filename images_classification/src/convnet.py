@@ -38,7 +38,7 @@ class ConvNet:
         return model, model_info
     
 
-    def _plot_results(self, model_info, metric, n_epochs, xticks_step):
+    def _plot_results(self, model_info, metric, n_epochs, xticks_step, plots_path, plots_name_suffix, extensions):
         metric_name = metric.replace("_", " ")
         plt.plot(model_info.history[metric])
         plt.plot(model_info.history[f"val_{metric}"])
@@ -47,14 +47,14 @@ class ConvNet:
         plt.xlabel("epoch")
         plt.ylabel(metric_name)
         plt.legend(["train", "validation"])
-        # TO DO: improve path for savefig
-        plt.savefig(f"./results/plots/{metric}.png")
+        for extension in extensions:
+            plt.savefig(f"{plots_path}{metric}_{plots_name_suffix}.{extension}")
         plt.close()
 
 
-    def plot_results(self, model_info, metrics):
+    def plot_results(self, model_info, metrics, plots_path, plots_name_suffix, extensions = ["png", "pdf"]):
         metrics = ["loss"] + metrics
         n_epochs = len(model_info.history["loss"])
         xticks_step = 1 if n_epochs < 10 else n_epochs / 10
         for metric in metrics:
-            self._plot_results(model_info, metric, n_epochs, xticks_step)
+            self._plot_results(model_info, metric, n_epochs, xticks_step, plots_path, plots_name_suffix, extensions)
