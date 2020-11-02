@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import itertools
 import os
+import gc
 
 from data_reader import DataReader
 from convnet_vgg16 import ConvNetVGG16
@@ -16,18 +17,18 @@ if __name__ == "__main__":
     # Set testing parameters
     generators_types_list = ["v1", "v2"]
     images_per_class_num_list = [90, 270, 900]
-    test_images_num = 270
     images_sizes_list = [64 * 2 ** i for i in range(3)]
     epochs = 50
-    batch_sizes_list = [32] #[32 * 2 ** i for i in range(3)]
+    batch_sizes_list = [32]
     fully_connected_layers_sizes_list = [16, 256, 4096]
     metrics = ["sparse_categorical_accuracy"]
 
-    # Prepare data frame for results
-    results_df = pd.DataFrame()
-
     # Prepare test confusion matrix columns names
     test_confusion_matrix_col_names = ["_".join(label) for label in itertools.product(prepare_labels("true"), prepare_labels("pred"))]
+
+    # Set parameters for saving results
+    results_path = "./results/vgg16/results.csv"
+    results_file_exists = os.path.isfile(results_path)
 
     for generator_type in generators_types_list:
         for images_per_class_num in images_per_class_num_list:
@@ -60,18 +61,19 @@ if __name__ == "__main__":
                     validation_data = data_reader.read_data("validation")
 
                     # Read test data
-                    test_data_reader = DataReader(test_images_dir, image_size, test_images_num, None, None)
+                    test_data_reader = DataReader(test_images_dir, image_size, batch_size, None, None)
                     test_data = test_data_reader.read_data()
-                    test_data_batch, test_labels = next(iter(test_data))
 
                     for fc_size in fully_connected_layers_sizes_list:
                         results_name_suffix = f"{batch_size}_{fc_size}_{fc_size}"
 
                         # Prepare model
+                        print("# Prepare model #")
                         vgg16 = ConvNetVGG16(input_shape)
                         vgg16_model = vgg16.prepare_convnet_vgg16(fc1 = fc_size, fc2 = fc_size)
 
                         # Compile and fit model
+                        print("# Compile and fit model #")
                         vgg16_model_trained, vgg16_model_info, training_time = vgg16.compile_and_fit_model(vgg16_model, 
                                                                                                             train_data,
                                                                                                             validation_data,
@@ -80,23 +82,36 @@ if __name__ == "__main__":
                         vgg16_model_info_history = vgg16_model_info.history
                         
                         # Plot training results
+                        print("# Plot training results #")
                         vgg16.plot_results(vgg16_model_info_history, metrics, plots_root_directory, results_name_suffix)
 
                         # Save training results
+                        print ("# Save training results #")
                         training_results_path = f"{training_results_root_directory}training_results_{results_name_suffix}"
                         vgg16.save_training_results_csv(vgg16_model_info_history, training_results_path)
 
-                        # Test model on test data
-                        test_prediction_results = vgg16_model_trained.evaluate(test_data)
-                        test_predictions = vgg16_model_trained.predict(test_data_batch)
-                        test_labels_pred = np.argmax(test_predictions, axis = 1)
-                        test_confusion_matrix = confusion_matrix(test_labels, test_labels_pred).ravel()
-
                         # Save model
+                        print("# Save model #")
                         model_path = f"{models_root_directory}vgg16_{results_name_suffix}.h5"
                         vgg16_model_trained.save(model_path)
 
-                        # Add results do results data frame
+                        # Test model on test data
+                        print("# Test model on test data #")
+                        test_prediction_results = vgg16_model_trained.evaluate(test_data)
+
+                        test_labels_pred = np.array([])
+                        test_labels = np.array([])
+
+                        for test_data_batch, test_labels_batch in test_data:
+                            test_predictions_batch = vgg16_model_trained.predict(test_data_batch)
+                            test_labels_pred_batch = np.argmax(test_predictions_batch, axis = 1)
+                            test_labels_pred = np.append(test_labels_pred, test_labels_pred_batch)
+                            test_labels = np.append(test_labels, test_labels_batch)
+                        
+                        test_confusion_matrix = confusion_matrix(test_labels, test_labels_pred).ravel()
+
+                        # Prepare dictionary with model results
+                        print("# Prepare dictionary with model results #")
                         results_dict = {
                             "generator_type": [generator_type],
                             "images_per_class_num": [images_per_class_num],
@@ -118,10 +133,14 @@ if __name__ == "__main__":
                         
                         for idx, col_name in enumerate(test_confusion_matrix_col_names):
                             results_dict[col_name] = test_confusion_matrix[idx]
-
+                        
+                        # Add model results to results file
+                        print("# Add model results to results file #")
                         results_df_new_row = pd.DataFrame(results_dict)
-                        results_df = results_df.append(results_df_new_row)
+                        results_df_new_row.to_csv(results_path, sep = ";", index = False, header = not results_file_exists, mode = "a")
 
-    # Save results to csv
-    results_path = "./results/vgg16/results.csv"
-    results_df.to_csv(results_path, sep = ";", index = False)
+                        if not results_file_exists:
+                            results_file_exists = True
+
+                        # Run garbage collector collection
+                        gc.collect()
