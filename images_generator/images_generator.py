@@ -73,16 +73,19 @@ class ImagesGenerator:
                         wc_parameterization = wc.wigner_caustic()
                         real_cusps_num = wc.get_number_of_cusps()
 
-                        consistent_cusps_num_counter += 1 if real_cusps_num == cusps_num else 0
-
                         log_text = f"### Oval no {oval_idx} ### Cusps num {cusps_num} ### Real cusps num {real_cusps_num} ###\n### sin_params {sin_params_subset} ###\n### cos_params {cos_params_subset} ###\n### bias {oval.bias} ###\n"
                         print(log_text)
                         self._write_log(log_text)
 
+                        if real_cusps_num == cusps_num:
+                            consistent_cusps_num_counter += 1
+                        elif real_cusps_num % 2 == 0:
+                            real_cusps_num -= 1
+
                         for img_size in self.images_sizes_list:
-                            self.plot_curve(oval_parameterization, CurveType.oval, cusps_num, oval_idx, img_size = img_size)
+                            self.plot_curve(oval_parameterization, CurveType.oval, real_cusps_num, oval_idx, img_size = img_size)
                         
-                        self.plot_curve(wc_parameterization, CurveType.wigner_caustic, cusps_num, oval_idx)
+                        self.plot_curve(wc_parameterization, CurveType.wigner_caustic, real_cusps_num, oval_idx)
 
         print(f"Percentage of consistent cusps num: {consistent_cusps_num_counter/oval_idx:.2%}\n")
 
