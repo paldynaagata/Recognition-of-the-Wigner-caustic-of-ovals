@@ -47,4 +47,4 @@ if __name__ == "__main__":
     minutes = seconds / 60
     hours = minutes / 60
 
-    print(f"Generation of images took {seconds:0.2f} seconds == {minutes:0.2f} minutes == {hours:0.2f} .")
+    print(f"Generation of images took {seconds:0.2f} seconds == {minutes:0.2f} minutes == {hours:0.2f} hours.")
